@@ -18,14 +18,19 @@ public struct SchedulerPreferences: Codable, Sendable {
         self.globalReleaseChannel = globalReleaseChannel
     }
 
-    private static let key = "org.111iridescence.updater.schedulerPreferences"
+    private static let key = "org.111iridescence.installer.schedulerPreferences"
+    private static let legacyKey = "org.111iridescence.updater.schedulerPreferences"
 
     public static func load() -> SchedulerPreferences {
-        guard let data = UserDefaults.standard.data(forKey: key),
-              let prefs = try? JSONDecoder().decode(SchedulerPreferences.self, from: data) else {
-            return SchedulerPreferences()
+        if let data = UserDefaults.standard.data(forKey: key),
+           let prefs = try? JSONDecoder().decode(SchedulerPreferences.self, from: data) {
+            return prefs
         }
-        return prefs
+        if let data = UserDefaults.standard.data(forKey: legacyKey),
+           let prefs = try? JSONDecoder().decode(SchedulerPreferences.self, from: data) {
+            return prefs
+        }
+        return SchedulerPreferences()
     }
 
     public func save() {

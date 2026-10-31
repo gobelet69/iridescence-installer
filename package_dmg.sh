@@ -4,16 +4,16 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "${SCRIPT_DIR}"
 
-APP_NAME="Iridescence Updater"
-BUNDLE_ID="org.111iridescence.updater"
+APP_NAME="Iridescence Installer"
+BUNDLE_ID="org.111iridescence.installer"
 VERSION="1.0.0"
-DMG_NAME="Iridescence-Updater-${VERSION}-arm64.dmg"
+DMG_NAME="Iridescence-Installer-${VERSION}-arm64.dmg"
 SRC_APP="${APP_NAME}.app"
-STAGING_DIR="/tmp/IridescenceUpdater_DMG_Staging"
+STAGING_DIR="/tmp/IridescenceInstaller_DMG_Staging"
 DIST_DIR="${SCRIPT_DIR}/dist"
 
 echo "============================================================"
-echo " Packaging Iridescence Updater for macOS (${DMG_NAME}) "
+echo " Packaging Iridescence Installer for macOS (${DMG_NAME}) "
 echo " 111iridescence Atelier "
 echo "============================================================"
 

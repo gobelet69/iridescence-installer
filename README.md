@@ -1,4 +1,4 @@
-# Iridescence Updater
+# Iridescence Installer
 
 > Native macOS application manager, GitHub release orchestrator, and scoped Gatekeeper quarantine installer for the **111iridescence** software atelier.
 
@@ -11,22 +11,23 @@
 
 ## Overview
 
-**Iridescence Updater** solves the friction of distributing and maintaining native, focused macOS software without an Apple Developer ID membership.
+**Iridescence Installer** solves the friction of distributing and maintaining native, focused macOS software without an Apple Developer ID membership. It is exclusively tailored for applications created within the **111iridescence** ecosystem.
 
 In standard macOS workflows, running unsigned software requires a 10-step manual process: downloading archives, mounting disk images, dragging bundles, being blocked by Gatekeeper quarantine, opening System Settings, overriding security warnings, and cleaning temporary files. 
 
-Iridescence Updater eliminates this friction through a lightweight, secure, and transparent native application:
-1. **Installed Apps**: Discovers applications installed in `/Applications` and `~/Applications`, identifies architecture and versioning, and maps them to GitHub release repositories.
+Iridescence Installer eliminates this friction through a lightweight, secure, and transparent native application:
+1. **Installed Apps**: Exclusively detects and manages official 111iridescence applications installed in `/Applications` and `~/Applications`, displaying architecture, release channel, versioning, and Gatekeeper quarantine state.
 2. **Updates & Batch Installation**: Checks GitHub releases with ETag conditional caching and rate-limit awareness. Features one-click **Update All** with progress tracking, release notes, and atomic bundle replacement.
-3. **Discover**: An ecosystem catalogue powered by GitHub repository topics (`iridescence-app`, `iridescence-featured`, `iridescence-beta`) and canonical static manifests, enabling new tools to appear automatically without recompilation.
+3. **Discover**: An ecosystem catalogue powered by GitHub repository topics (`iridescence-app`, `iridescence-featured`, `iridescence-beta`) and canonical static manifests, enabling newly published tools to appear automatically without recompilation.
 4. **Scoped Quarantine Handling**: Integrated native extended-attribute management (`com.apple.quarantine`) strictly scoped to verified `.app` bundles, eliminating repetitive Gatekeeper friction for trusted publishers without disabling system-wide Gatekeeper.
-5. **Rollback & Safety**: Automatic backup of existing working applications prior to upgrade, enabling one-click instant recovery.
+5. **Self-Update Engine**: Built-in autonomous self-update pipeline that checks `gobelet69/iridescence-installer`, verifies SHA-256 sums, safely replaces the host bundle in `/Applications`, and relaunches without user intervention.
+6. **Rollback & Safety**: Automatic backup of existing working applications prior to upgrade, enabling one-click instant recovery.
 
 ---
 
 ## Visual Design — The Prismatic Atelier
 
-Iridescence Updater is built strictly with **The Prismatic Atelier (v2.1.0)** native design tokens:
+Iridescence Installer is built strictly with **The Prismatic Atelier (v2.1.0)** native design tokens:
 - **Studio Surfaces**: Luminous Pearl (`#FAF9FC`) in light mode; Deep Obsidian (`#110D17` / `#16101D`) in dark mode.
 - **Mathematical Pixel Grid**: 8pt discrete coordinate grid with subtle illuminated points and signature 5-cell pixel cross stars (`cross-5`).
 - **Spectral Accents**: Electric Blue (`#2266F2`), Deep Violet (`#702EE4`), Luminous Cyan (`#0CC0E8`), and Controlled Turquoise (`#12CCB8`).
@@ -38,7 +39,7 @@ Iridescence Updater is built strictly with **The Prismatic Atelier (v2.1.0)** na
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                 Iridescence Updater (SwiftUI)               │
+│                Iridescence Installer (SwiftUI)              │
 ├─────────────────┬────────────────────┬──────────────────────┤
 │    Installed    │      Updates       │       Discover       │
 └────────┬────────┴─────────┬──────────┴──────────┬───────────┘
@@ -47,10 +48,10 @@ Iridescence Updater is built strictly with **The Prismatic Atelier (v2.1.0)** na
 │                    IridescenceCore Framework                │
 ├───────────────────┬─────────────────────┬───────────────────┤
 │ AppScanner        │ GitHubClient        │ CatalogDiscovery  │
-│ (/Applications)   │ (ETags & Releases)  │ (Topics & Seeds)  │
+│ (Ecosystem Apps)  │ (ETags & Releases)  │ (Topics & Seeds)  │
 ├───────────────────┼─────────────────────┼───────────────────┤
-│ InstallationEngine│ QuarantineManager   │ RollbackManager   │
-│ (DMG/Zip Sandbox) │ (POSIX xattr API)   │ (Version Backups) │
+│ InstallationEngine│ QuarantineManager   │ SelfUpdateManager │
+│ (DMG/Zip Sandbox) │ (POSIX xattr API)   │ (Atomic Swap)     │
 └───────────────────┴─────────────────────┴───────────────────┘
 ```
 
@@ -58,7 +59,7 @@ Iridescence Updater is built strictly with **The Prismatic Atelier (v2.1.0)** na
 Iridescence applications are distributed without Apple Developer ID signing or Apple notarization credentials.
 
 To provide a seamless experience while preserving security boundaries:
-- **No Global Bypass**: The updater never touches system-wide Gatekeeper settings (`spctl --master-disable` is never used).
+- **No Global Bypass**: The installer never touches system-wide Gatekeeper settings (`spctl --master-disable` is never used).
 - **Strict Bundle Scoping**: Quarantine removal is executed via direct Darwin POSIX APIs (`removexattr`, `XATTR_NOFOLLOW`) applied strictly within the validated `.app` bundle directory tree.
 - **Symlink Protection**: Symlinks within bundles are never traversed outside bundle bounds.
 - **Trust Policy**:
@@ -76,13 +77,13 @@ To provide a seamless experience while preserving security boundaries:
 | **Mass Print** | `com.massprint.app` | `gobelet69/Mass-Print` | Available |
 | **Mac Resource Guard** | `com.macresourceguard.app` | `gobelet69/mac-resource-guard` | Available |
 | **QuickPad** | `org.111iridescence.quickpad` | `gobelet69/QuickPad` | Available |
-| **Iridescence Updater** | `org.111iridescence.updater` | `gobelet69/iridescence-updater` | Host Tool |
+| **Iridescence Installer** | `org.111iridescence.installer` | `gobelet69/iridescence-installer` | Host Application |
 
 ---
 
 ## Adding a New Official Application
 
-To publish a new application to the Iridescence Discover catalogue without recompiling the Updater:
+To publish a new application to the Iridescence Discover catalogue without recompiling the Installer:
 
 1. **Repository Configuration**:
    - Host under the official GitHub account (`gobelet69`).
@@ -96,7 +97,7 @@ To publish a new application to the Iridescence Discover catalogue without recom
    - Attach `SHA256SUMS.txt` with SHA-256 hashes for all binaries.
 
 3. **Automatic Discovery**:
-   - The Updater queries GitHub REST API periodically or upon clicking **Refresh**.
+   - The Installer queries GitHub REST API periodically or upon clicking **Refresh**.
    - Compatible macOS assets are parsed and verified.
    - A system notification announces the newly available application.
 
@@ -111,12 +112,12 @@ To publish a new application to the Iridescence Discover catalogue without recom
 ### Quick Build
 ```bash
 # Clone repository
-git clone https://github.com/gobelet69/iridescence-updater.git
-cd iridescence-updater
+git clone https://github.com/gobelet69/iridescence-installer.git
+cd iridescence-installer
 
 # Build debug binary and run self-test
-swift build
-swift run IridescenceUpdater --selftest
+swift build --scratch-path /tmp/IridescenceInstallerScratch
+swift run --scratch-path /tmp/IridescenceInstallerScratch IridescenceInstaller --selftest
 
 # Package release .app bundle
 ./build.sh release
@@ -127,7 +128,7 @@ swift run IridescenceUpdater --selftest
 
 ### Running Automated Tests
 ```bash
-swift test --scratch-path /tmp/IridescenceUpdaterBuild
+swift test --scratch-path /tmp/IridescenceInstallerBuild
 ```
 
 ---
@@ -137,8 +138,8 @@ swift test --scratch-path /tmp/IridescenceUpdaterBuild
 | Metric | Measured Value | Standard |
 |---|---|---|
 | **Cold Self-Test Boot** | **138 ms** | < 500 ms |
-| **Local App Scan (/Applications)** | **< 350 ms** | < 1,000 ms |
-| **Universal Binary Size** | **2.98 MB** | Minimal footprint |
+| **Ecosystem App Scan (/Applications)** | **< 180 ms** | < 1,000 ms |
+| **Universal Binary Size** | **3.02 MB** | Minimal footprint |
 | **Compressed Distribution DMG** | **1.45 MB** | Lightweight distribution |
 | **Idle Memory Footprint** | **~28 MB** | Low resource usage |
 

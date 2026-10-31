@@ -1,6 +1,6 @@
 import AppKit
 
-/// Generates the official 111iridescence v2.1 Iridescence Updater application icon:
+/// Generates the official 111iridescence v2.1 Iridescence Installer application icon:
 /// Luminous Pearl squircle + Obsidian nexus container + pixel-grid update glyph + cross-5 pixel star.
 func makeIcon(size: CGFloat) -> NSImage {
     let image = NSImage(size: NSSize(width: size, height: size))

@@ -159,6 +159,55 @@ public struct SettingsView: View {
             .overlay(RoundedRectangle(cornerRadius: IridescenceTheme.radiusMd).stroke(IridescenceTheme.hairline, lineWidth: 1))
             .onChange(of: appState.schedulerPrefs.globalReleaseChannel) { _ in appState.savePreferences() }
             .onChange(of: appState.schedulerPrefs.autoCheckEnabled) { _ in appState.savePreferences() }
+
+            // Iridescence Installer Self-Update Box
+            VStack(alignment: .leading, spacing: 10) {
+                Text("Iridescence Installer Self-Update")
+                    .font(.system(size: 13, weight: .bold))
+                    .foregroundColor(IridescenceTheme.textPrimary)
+
+                HStack {
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Installed Version: v1.0.0")
+                            .font(IridescenceTheme.fontMono(size: 12, weight: .semibold))
+                            .foregroundColor(IridescenceTheme.textPrimary)
+
+                        if let rel = appState.selfUpdateRelease {
+                            Text("New version available: v\(rel.version.displayVersion)")
+                                .font(.system(size: 11))
+                                .foregroundColor(IridescenceTheme.luminousCyan)
+                        } else {
+                            Text("Iridescence Installer is up to date.")
+                                .font(.system(size: 11))
+                                .foregroundColor(IridescenceTheme.textSecondary)
+                        }
+                    }
+
+                    Spacer()
+
+                    if appState.selfUpdateRelease != nil {
+                        Button("Self-Update Now") {
+                            Task {
+                                await appState.triggerSelfUpdate()
+                            }
+                        }
+                        .buttonStyle(.borderedProminent)
+                        .controlSize(.small)
+                    } else {
+                        Button("Check for Updates") {
+                            Task {
+                                await appState.checkSelfUpdate()
+                            }
+                        }
+                        .buttonStyle(.bordered)
+                        .controlSize(.small)
+                    }
+                }
+            }
+            .padding(14)
+            .background(IridescenceTheme.cardSurface)
+            .cornerRadius(IridescenceTheme.radiusMd)
+            .overlay(RoundedRectangle(cornerRadius: IridescenceTheme.radiusMd).stroke(IridescenceTheme.hairline, lineWidth: 1))
         }
     }
 

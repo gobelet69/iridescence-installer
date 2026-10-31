@@ -35,9 +35,15 @@ public actor RollbackManager {
     private let baseRollbackDir: URL
 
     public init() {
-        let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
-        self.baseRollbackDir = appSupport.appendingPathComponent("IridescenceUpdater/Rollback", isDirectory: true)
-        try? fileManager.createDirectory(at: baseRollbackDir, withIntermediateDirectories: true)
+        let fm = FileManager.default
+        let appSupport = fm.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
+        let newDir = appSupport.appendingPathComponent("IridescenceInstaller/Rollback", isDirectory: true)
+        let oldDir = appSupport.appendingPathComponent("IridescenceUpdater/Rollback", isDirectory: true)
+        if !fm.fileExists(atPath: newDir.path) && fm.fileExists(atPath: oldDir.path) {
+            try? fm.moveItem(at: oldDir, to: newDir)
+        }
+        self.baseRollbackDir = newDir
+        try? fm.createDirectory(at: baseRollbackDir, withIntermediateDirectories: true)
     }
 
     /// Backup an installed app before replacing it
@@ -64,7 +70,7 @@ public actor RollbackManager {
 
         guard result.isSuccess else {
             throw NSError(
-                domain: "org.111iridescence.updater.rollback",
+                domain: "org.111iridescence.installer.rollback",
                 code: -1,
                 userInfo: [NSLocalizedDescriptionKey: "Failed to create backup bundle: \(result.stderr)"]
             )
@@ -89,7 +95,7 @@ public actor RollbackManager {
     public func restore(entry: RollbackEntry) throws {
         guard fileManager.fileExists(atPath: entry.backupBundleURL.path) else {
             throw NSError(
-                domain: "org.111iridescence.updater.rollback",
+                domain: "org.111iridescence.installer.rollback",
                 code: -2,
                 userInfo: [NSLocalizedDescriptionKey: "Backup bundle does not exist at \(entry.backupBundleURL.path)"]
             )
@@ -111,7 +117,7 @@ public actor RollbackManager {
 
         guard result.isSuccess else {
             throw NSError(
-                domain: "org.111iridescence.updater.rollback",
+                domain: "org.111iridescence.installer.rollback",
                 code: -3,
                 userInfo: [NSLocalizedDescriptionKey: "Failed to restore backup: \(result.stderr)"]
             )

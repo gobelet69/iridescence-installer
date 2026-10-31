@@ -44,14 +44,19 @@ public final class AppState: ObservableObject {
     @Published public var selectedAppForDetail: InstalledApp?
     @Published public var selectedCatalogForDetail: CatalogApp?
 
+    @Published public var selfUpdateState: SelfUpdateState = .idle
+    @Published public var selfUpdateRelease: ReleaseItem? = nil
+
     private let scanner = AppScanner.shared
     private let gitHub = GitHubClient.shared
     private let discovery = CatalogDiscovery.shared
     private let installer = InstallationManager.shared
     private let rollbackMgr = RollbackManager.shared
     private let notifier = NotificationManager.shared
+    private let selfUpdater = SelfUpdateManager.shared
 
     public init() {
+        self.catalogApps = CatalogApp.defaultSeeds
         self.trustPolicy = TrustPolicy.load()
         self.schedulerPrefs = SchedulerPreferences.load()
         self.notificationPrefs = NotificationPreferences.load()
@@ -133,7 +138,39 @@ public final class AppState: ObservableObject {
         self.installedApps = updatedInstalled
         self.pendingUpdates = updatesAvailable
         self.rateLimitRemaining = await gitHub.rateLimitRemaining
+
+        // Check for self update of Iridescence Installer
+        await checkSelfUpdate()
+
         self.isCheckingUpdates = false
+    }
+
+    // MARK: - Self Update
+
+    public func checkSelfUpdate() async {
+        let includeBetaGlobal = (schedulerPrefs.globalReleaseChannel == .beta)
+        if let rel = await selfUpdater.checkForSelfUpdate(includeBeta: includeBetaGlobal) {
+            self.selfUpdateRelease = rel
+            self.selfUpdateState = .updateAvailable(rel)
+        } else {
+            self.selfUpdateRelease = nil
+            self.selfUpdateState = .upToDate
+        }
+    }
+
+    public func triggerSelfUpdate() async {
+        guard let rel = selfUpdateRelease else { return }
+        selfUpdateState = .downloading(0.0)
+
+        do {
+            try await selfUpdater.performSelfUpdate(release: rel) { [weak self] state in
+                Task { @MainActor in
+                    self?.selfUpdateState = state
+                }
+            }
+        } catch {
+            selfUpdateState = .failed(error.localizedDescription)
+        }
     }
 
     // MARK: - Single & Batch Installation

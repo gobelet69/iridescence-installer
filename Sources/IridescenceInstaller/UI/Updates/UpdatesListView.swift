@@ -65,7 +65,7 @@ public struct UpdatesListView: View {
                         .foregroundColor(IridescenceTheme.textSecondary)
                     Spacer()
                 }
-            } else if appState.pendingUpdates.isEmpty {
+            } else if appState.pendingUpdates.isEmpty && appState.selfUpdateRelease == nil {
                 VStack(spacing: 12) {
                     Spacer()
                     ZStack {
@@ -82,7 +82,7 @@ public struct UpdatesListView: View {
                         .font(.system(size: 15, weight: .bold))
                         .foregroundColor(IridescenceTheme.textPrimary)
 
-                    Text("All tracked applications match the latest published releases.")
+                    Text("All tracked 111iridescence applications match the latest published releases.")
                         .font(.system(size: 12))
                         .foregroundColor(IridescenceTheme.textSecondary)
 
@@ -91,6 +91,10 @@ public struct UpdatesListView: View {
             } else {
                 ScrollView {
                     LazyVStack(spacing: 12) {
+                        if let selfRel = appState.selfUpdateRelease {
+                            SelfUpdateCardView(release: selfRel, appState: appState)
+                        }
+
                         ForEach(appState.pendingUpdates) { app in
                             if let update = app.availableUpdate {
                                 UpdateRowView(
@@ -202,6 +206,68 @@ struct UpdateRowView: View {
         .overlay(
             RoundedRectangle(cornerRadius: IridescenceTheme.radiusMd)
                 .stroke(IridescenceTheme.hairline, lineWidth: 1)
+        )
+    }
+}
+
+struct SelfUpdateCardView: View {
+    let release: ReleaseItem
+    @ObservedObject var appState: AppState
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            HStack(spacing: 12) {
+                ZStack {
+                    RoundedRectangle(cornerRadius: 9)
+                        .fill(IridescenceTheme.deepViolet.opacity(0.15))
+                        .frame(width: 42, height: 42)
+
+                    Image(systemName: "sparkles")
+                        .font(.system(size: 18, weight: .bold))
+                        .foregroundColor(IridescenceTheme.luminousCyan)
+                }
+
+                VStack(alignment: .leading, spacing: 3) {
+                    HStack(spacing: 6) {
+                        Text("Iridescence Installer (Self-Update)")
+                            .font(.system(size: 14, weight: .bold))
+                            .foregroundColor(IridescenceTheme.textPrimary)
+
+                        StatusBadge(.official)
+                    }
+
+                    HStack(spacing: 6) {
+                        Text("Current v1.0.0")
+                            .font(IridescenceTheme.fontMono(size: 11))
+                            .foregroundColor(IridescenceTheme.textMuted)
+
+                        Image(systemName: "arrow.right")
+                            .font(.system(size: 9))
+                            .foregroundColor(IridescenceTheme.textMuted)
+
+                        Text("v\(release.version.displayVersion)")
+                            .font(IridescenceTheme.fontMono(size: 11, weight: .bold))
+                            .foregroundColor(IridescenceTheme.luminousCyan)
+                    }
+                }
+
+                Spacer()
+
+                Button("Self-Update Now") {
+                    Task {
+                        await appState.triggerSelfUpdate()
+                    }
+                }
+                .buttonStyle(.borderedProminent)
+                .controlSize(.small)
+            }
+        }
+        .padding(14)
+        .background(IridescenceTheme.cardSurface)
+        .cornerRadius(IridescenceTheme.radiusMd)
+        .overlay(
+            RoundedRectangle(cornerRadius: IridescenceTheme.radiusMd)
+                .stroke(IridescenceTheme.luminousCyan.opacity(0.5), lineWidth: 1.2)
         )
     }
 }

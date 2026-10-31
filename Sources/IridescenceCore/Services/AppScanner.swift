@@ -8,7 +8,7 @@ public actor AppScanner {
     private let quarantineManager = QuarantineManager.shared
 
     // Stored manual mappings: BundleIdentifier -> GitHubRepository ("owner/repo")
-    private let manualMappingsKey = "org.111iridescence.updater.manualMappings"
+    private let manualMappingsKey = "org.111iridescence.installer.manualMappings"
 
     public init() {}
 
@@ -18,10 +18,12 @@ public actor AppScanner {
         "com.massprint.app": "gobelet69/Mass-Print",
         "com.macresourceguard.app": "gobelet69/mac-resource-guard",
         "org.111iridescence.quickpad": "gobelet69/QuickPad",
-        "org.111iridescence.updater": "gobelet69/iridescence-updater"
+        "org.111iridescence.installer": "gobelet69/iridescence-installer",
+        "org.111iridescence.updater": "gobelet69/iridescence-installer"
     ]
 
     /// Scan standard application directories (/Applications and ~/Applications)
+    /// Exclusively detects 111iridescence applications authored by the developer.
     public func scanInstalledApplications() async -> [InstalledApp] {
         var results: [InstalledApp] = []
         var scannedBundleIDs = Set<String>()
@@ -48,6 +50,9 @@ public actor AppScanner {
                 guard itemURL.pathExtension == "app" else { continue }
 
                 if let app = inspectAppBundle(at: itemURL, manualMappings: manualMappings) {
+                    // Filter strictly for 111iridescence applications made by the developer
+                    guard app.isOfficialIridescence else { continue }
+
                     // Prevent duplicate entries if installed in both /Applications and ~/Applications
                     if !scannedBundleIDs.contains(app.bundleIdentifier) {
                         scannedBundleIDs.insert(app.bundleIdentifier)
@@ -57,12 +62,8 @@ public actor AppScanner {
             }
         }
 
-        // Sort: Official Iridescence apps first, then alphabetical by name
-        return results.sorted { (lhs, rhs) -> Bool in
-            if lhs.isOfficialIridescence != rhs.isOfficialIridescence {
-                return lhs.isOfficialIridescence && !rhs.isOfficialIridescence
-            }
-            return lhs.name.localizedCaseInsensitiveCompare(rhs.name) == .orderedAscending
+        return results.sorted {
+            $0.name.localizedCaseInsensitiveCompare($1.name) == .orderedAscending
         }
     }
 

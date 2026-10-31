@@ -41,7 +41,7 @@ public enum ProcessRunner {
         if process.isRunning {
             process.terminate()
             throw NSError(
-                domain: "org.111iridescence.updater.process",
+                domain: "org.111iridescence.installer.process",
                 code: -1,
                 userInfo: [NSLocalizedDescriptionKey: "Process timed out after \(timeout) seconds: \(executableURL.path)"]
             )

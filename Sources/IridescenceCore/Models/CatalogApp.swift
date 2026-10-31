@@ -123,15 +123,15 @@ public struct CatalogApp: Identifiable, Codable, Sendable, Hashable {
             isFeatured: false
         ),
         CatalogApp(
-            id: "iridescence-updater",
-            name: "Iridescence Updater",
-            shortName: "Updater",
+            id: "iridescence-installer",
+            name: "Iridescence Installer",
+            shortName: "Installer",
             taglineEn: "Native macOS app manager & unsigned installer.",
             taglineFr: "Gestionnaire natif et installateur d'apps non signées.",
-            descriptionEn: "Autonomous updater and discoverer for the 111iridescence ecosystem with safe quarantine removal.",
-            descriptionFr: "Mise à jour et découverte autonomes pour l'écosystème 111iridescence avec gestion sécurisée de la quarantaine.",
-            repository: "gobelet69/iridescence-updater",
-            bundleIdentifier: "org.111iridescence.updater",
+            descriptionEn: "Autonomous installer and updater for 111iridescence ecosystem software with safe quarantine removal.",
+            descriptionFr: "Installateur et mise à jour autonomes pour l'écosystème 111iridescence avec gestion sécurisée de la quarantaine.",
+            repository: "gobelet69/iridescence-installer",
+            bundleIdentifier: "org.111iridescence.installer",
             minimumOSVersion: "13.0",
             accentColorName: "cyan",
             isFeatured: false

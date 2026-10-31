@@ -40,7 +40,8 @@ public actor GitHubClient {
     public private(set) var rateLimitResetDate: Date = Date()
 
     // Stored settings
-    private let tokenKey = "org.111iridescence.updater.githubToken"
+    private let tokenKey = "org.111iridescence.installer.githubToken"
+    private let legacyTokenKey = "org.111iridescence.updater.githubToken"
 
     public init(session: URLSession = .shared) {
         let config = URLSessionConfiguration.default
@@ -59,7 +60,7 @@ public actor GitHubClient {
     }
 
     public func getGitHubToken() -> String? {
-        return UserDefaults.standard.string(forKey: tokenKey)
+        return UserDefaults.standard.string(forKey: tokenKey) ?? UserDefaults.standard.string(forKey: legacyTokenKey)
     }
 
     /// Fetch all releases for a repository (e.g. "gobelet69/Mass-Print")
@@ -211,7 +212,7 @@ public actor GitHubClient {
 
         var req = URLRequest(url: url)
         req.setValue("application/vnd.github.v3+json", forHTTPHeaderField: "Accept")
-        req.setValue("IridescenceUpdater/1.0", forHTTPHeaderField: "User-Agent")
+        req.setValue("IridescenceInstaller/1.0", forHTTPHeaderField: "User-Agent")
 
         if let token = getGitHubToken() {
             req.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")

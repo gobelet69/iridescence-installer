@@ -2,7 +2,7 @@
 import PackageDescription
 
 let package = Package(
-    name: "IridescenceUpdater",
+    name: "IridescenceInstaller",
     platforms: [
         .macOS(.v13)
     ],
@@ -12,8 +12,8 @@ let package = Package(
             targets: ["IridescenceCore"]
         ),
         .executable(
-            name: "IridescenceUpdater",
-            targets: ["IridescenceUpdater"]
+            name: "IridescenceInstaller",
+            targets: ["IridescenceInstaller"]
         )
     ],
     dependencies: [],
@@ -24,9 +24,9 @@ let package = Package(
             path: "Sources/IridescenceCore"
         ),
         .executableTarget(
-            name: "IridescenceUpdater",
+            name: "IridescenceInstaller",
             dependencies: ["IridescenceCore"],
-            path: "Sources/IridescenceUpdater"
+            path: "Sources/IridescenceInstaller"
         ),
         .testTarget(
             name: "IridescenceCoreTests",

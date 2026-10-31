@@ -2,7 +2,7 @@ import SwiftUI
 import AppKit
 import IridescenceCore
 
-/// Design tokens and styling for Iridescence Updater, adhering to The Prismatic Atelier (v2.1.0).
+/// Design tokens and styling for Iridescence Installer, adhering to The Prismatic Atelier (v2.1.0).
 public enum IridescenceTheme {
 
     // MARK: - Dynamic Colors

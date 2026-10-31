@@ -11,8 +11,13 @@ public actor CatalogDiscovery {
 
     public init() {
         let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
-        let cachePath = appSupport.appendingPathComponent("IridescenceUpdater/catalog.json")
-        self.cacheURL = cachePath
+        let newCache = appSupport.appendingPathComponent("IridescenceInstaller/catalog.json")
+        let oldCache = appSupport.appendingPathComponent("IridescenceUpdater/catalog.json")
+        if !FileManager.default.fileExists(atPath: newCache.path) && FileManager.default.fileExists(atPath: oldCache.path) {
+            try? FileManager.default.createDirectory(at: newCache.deletingLastPathComponent(), withIntermediateDirectories: true)
+            try? FileManager.default.copyItem(at: oldCache, to: newCache)
+        }
+        self.cacheURL = newCache
 
         var initialCatalog: [String: CatalogApp] = [:]
         var initialKnownIDs = Set<String>()
@@ -24,7 +29,7 @@ public actor CatalogDiscovery {
         }
 
         // Load cached if available
-        if let data = try? Data(contentsOf: cachePath),
+        if let data = try? Data(contentsOf: newCache),
            let cached = try? JSONDecoder().decode([CatalogApp].self, from: data) {
             for item in cached {
                 initialCatalog[item.id] = item

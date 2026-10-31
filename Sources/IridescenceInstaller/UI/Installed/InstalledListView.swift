@@ -3,9 +3,9 @@ import AppKit
 import IridescenceCore
 
 public enum InstalledFilter: String, CaseIterable, Identifiable {
-    case all = "All"
-    case official = "Official (111)"
+    case all = "All Installed"
     case hasUpdates = "Updates Ready"
+    case quarantined = "Quarantined"
 
     public var id: String { rawValue }
 }
@@ -25,10 +25,10 @@ public struct InstalledListView: View {
         switch filter {
         case .all:
             break
-        case .official:
-            list = list.filter { $0.isOfficialIridescence }
         case .hasUpdates:
             list = list.filter { $0.hasUpdate }
+        case .quarantined:
+            list = list.filter { $0.hasQuarantine }
         }
 
         let query = appState.searchQuery.trimmingCharacters(in: .whitespacesAndNewlines).lowercased()
@@ -46,7 +46,7 @@ public struct InstalledListView: View {
             // Header
             PixelGridHeader(
                 title: "Installed Applications",
-                subtitle: "\(appState.installedApps.count) applications detected on this Mac",
+                subtitle: "\(appState.installedApps.count) 111iridescence application\(appState.installedApps.count == 1 ? "" : "s") installed on this Mac",
                 accentColor: IridescenceTheme.deepViolet
             )
 
@@ -116,10 +116,10 @@ public struct InstalledListView: View {
                     Image(systemName: "square.stack.3d.slash")
                         .font(.system(size: 32))
                         .foregroundColor(IridescenceTheme.textMuted)
-                    Text("No applications found matching filter")
+                    Text("No Iridescence applications installed yet")
                         .font(.system(size: 14, weight: .semibold))
                         .foregroundColor(IridescenceTheme.textPrimary)
-                    Text("Try adjusting your search query or switching filters.")
+                    Text("Visit the Discover tab to install apps from the 111iridescence portfolio.")
                         .font(.system(size: 12))
                         .foregroundColor(IridescenceTheme.textSecondary)
                     Spacer()

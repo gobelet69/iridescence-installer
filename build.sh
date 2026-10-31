@@ -4,10 +4,10 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "${SCRIPT_DIR}"
 
-APP_NAME="Iridescence Updater"
+APP_NAME="Iridescence Installer"
 BUNDLE="${APP_NAME}.app"
 BUILD_CONFIG="${1:-release}"
-BUILD_STAGE="/tmp/IridescenceUpdaterBuildStage"
+BUILD_STAGE="/tmp/IridescenceInstallerBuildStage"
 
 echo "▸ Staging source files in /tmp to avoid iCloud coordination locks…"
 rm -rf "${BUILD_STAGE}"
@@ -20,7 +20,7 @@ cp Package.swift "${BUILD_STAGE}/"
 
 echo "▸ Building ${APP_NAME} (${BUILD_CONFIG})…"
 cd "${BUILD_STAGE}"
-swift build -c "${BUILD_CONFIG}" --scratch-path "/tmp/IridescenceUpdaterScratch"
+swift build -c "${BUILD_CONFIG}" --scratch-path "/tmp/IridescenceInstallerScratch"
 
 if [ "$BUILD_CONFIG" = "release" ]; then
     CONFIG_DIR="Release"
@@ -28,7 +28,7 @@ else
     CONFIG_DIR="Debug"
 fi
 
-BINARY="/tmp/IridescenceUpdaterScratch/out/Products/${CONFIG_DIR}/IridescenceUpdater"
+BINARY="/tmp/IridescenceInstallerScratch/out/Products/${CONFIG_DIR}/IridescenceInstaller"
 
 cd - >/dev/null
 
@@ -38,8 +38,8 @@ rm -rf "${TMP_BUNDLE}" "${BUNDLE}"
 mkdir -p "${TMP_BUNDLE}/Contents/MacOS"
 mkdir -p "${TMP_BUNDLE}/Contents/Resources"
 
-cp "${BINARY}" "${TMP_BUNDLE}/Contents/MacOS/Iridescence Updater"
-chmod +x "${TMP_BUNDLE}/Contents/MacOS/Iridescence Updater"
+cp "${BINARY}" "${TMP_BUNDLE}/Contents/MacOS/Iridescence Installer"
+chmod +x "${TMP_BUNDLE}/Contents/MacOS/Iridescence Installer"
 
 if [ -f "Resources/AppIcon.icns" ]; then
     cp "Resources/AppIcon.icns" "${TMP_BUNDLE}/Contents/Resources/AppIcon.icns"
@@ -53,17 +53,17 @@ cat > "${TMP_BUNDLE}/Contents/Info.plist" << 'PLIST'
     <key>CFBundleDevelopmentRegion</key>
     <string>en</string>
     <key>CFBundleExecutable</key>
-    <string>Iridescence Updater</string>
+    <string>Iridescence Installer</string>
     <key>CFBundleIconFile</key>
     <string>AppIcon</string>
     <key>CFBundleIdentifier</key>
-    <string>org.111iridescence.updater</string>
+    <string>org.111iridescence.installer</string>
     <key>CFBundleInfoDictionaryVersion</key>
     <string>6.0</string>
     <key>CFBundleName</key>
-    <string>Iridescence Updater</string>
+    <string>Iridescence Installer</string>
     <key>CFBundleDisplayName</key>
-    <string>Iridescence Updater</string>
+    <string>Iridescence Installer</string>
     <key>CFBundlePackageType</key>
     <string>APPL</string>
     <key>CFBundleShortVersionString</key>

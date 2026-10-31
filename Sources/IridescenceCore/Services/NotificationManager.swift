@@ -22,14 +22,19 @@ public struct NotificationPreferences: Codable, Sendable {
         self.notifyInstallFailed = notifyInstallFailed
     }
 
-    private static let key = "org.111iridescence.updater.notificationPreferences"
+    private static let key = "org.111iridescence.installer.notificationPreferences"
+    private static let legacyKey = "org.111iridescence.updater.notificationPreferences"
 
     public static func load() -> NotificationPreferences {
-        guard let data = UserDefaults.standard.data(forKey: key),
-              let prefs = try? JSONDecoder().decode(NotificationPreferences.self, from: data) else {
-            return NotificationPreferences()
+        if let data = UserDefaults.standard.data(forKey: key),
+           let prefs = try? JSONDecoder().decode(NotificationPreferences.self, from: data) {
+            return prefs
         }
-        return prefs
+        if let data = UserDefaults.standard.data(forKey: legacyKey),
+           let prefs = try? JSONDecoder().decode(NotificationPreferences.self, from: data) {
+            return prefs
+        }
+        return NotificationPreferences()
     }
 
     public func save() {

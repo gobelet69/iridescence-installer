@@ -60,14 +60,19 @@ public struct TrustPolicy: Codable, Sendable {
     }
 
     // MARK: - Persistence
-    private static let storageKey = "org.111iridescence.updater.trustPolicy"
+    private static let storageKey = "org.111iridescence.installer.trustPolicy"
+    private static let legacyStorageKey = "org.111iridescence.updater.trustPolicy"
 
     public static func load() -> TrustPolicy {
-        guard let data = UserDefaults.standard.data(forKey: storageKey),
-              let policy = try? JSONDecoder().decode(TrustPolicy.self, from: data) else {
-            return TrustPolicy()
+        if let data = UserDefaults.standard.data(forKey: storageKey),
+           let policy = try? JSONDecoder().decode(TrustPolicy.self, from: data) {
+            return policy
         }
-        return policy
+        if let data = UserDefaults.standard.data(forKey: legacyStorageKey),
+           let policy = try? JSONDecoder().decode(TrustPolicy.self, from: data) {
+            return policy
+        }
+        return TrustPolicy()
     }
 
     public func save() {

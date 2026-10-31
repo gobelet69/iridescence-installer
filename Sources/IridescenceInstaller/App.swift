@@ -3,11 +3,11 @@ import AppKit
 import IridescenceCore
 
 @main
-struct IridescenceUpdaterApp: App {
+struct IridescenceInstallerApp: App {
     @StateObject private var appState = AppState.shared
 
     init() {
-        // Handle command-line arguments (e.g. --selftest, --tab)
+        // Handle command-line arguments (e.g. --selftest, --tab, --render-views)
         if CommandLine.arguments.contains("--selftest") {
             runSelfTestAndExit()
         }
@@ -32,6 +32,9 @@ struct IridescenceUpdaterApp: App {
             SidebarView(appState: appState)
                 .background(IridescenceTheme.canvas)
                 .preferredColorScheme(nil) // System dynamic appearance
+                .onAppear {
+                    handleCaptureIfRequested()
+                }
         }
         .windowStyle(.titleBar)
         .windowToolbarStyle(.unified)
@@ -56,7 +59,7 @@ struct IridescenceUpdaterApp: App {
 
     /// In-app self-test execution for verification without GUI automation
     private func runSelfTestAndExit() -> Never {
-        print("▸ Starting Iridescence Updater Self-Test…")
+        print("▸ Starting Iridescence Installer Self-Test…")
 
         // 1. Semantic version test
         let v1 = AppVersion("v1.2.3")
@@ -95,5 +98,34 @@ struct IridescenceUpdaterApp: App {
 
         print("✔ ALL SELF-TESTS PASSED SUCCESSFULLY")
         exit(0)
+    }
+
+    /// Captures the window content directly from the AppKit layer without needing Screen Recording permission
+    private func handleCaptureIfRequested() {
+        guard let idx = CommandLine.arguments.firstIndex(of: "--capture-to"),
+              idx + 1 < CommandLine.arguments.count else { return }
+        let outPath = CommandLine.arguments[idx + 1]
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+            guard let window = NSApp.windows.first(where: { $0.contentView != nil && $0.frame.width > 400 }),
+                  let view = window.contentView else {
+                print("No suitable window found for capture")
+                exit(1)
+            }
+
+            let pdfData = view.dataWithPDF(inside: view.bounds)
+            if let image = NSImage(data: pdfData),
+               let rep = NSBitmapImageRep(data: image.tiffRepresentation ?? Data()),
+               let png = rep.representation(using: .png, properties: [:]) {
+                let url = URL(fileURLWithPath: outPath)
+                try? FileManager.default.createDirectory(at: url.deletingLastPathComponent(), withIntermediateDirectories: true)
+                try? png.write(to: url)
+                print("✔ Captured active window to \(outPath) (\(png.count) bytes)")
+                exit(0)
+            } else {
+                print("Failed to convert view to PNG")
+                exit(1)
+            }
+        }
     }
 }
