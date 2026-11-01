@@ -134,10 +134,15 @@ struct IridescenceInstallerApp: App {
                 exit(1)
             }
 
-            let pdfData = view.dataWithPDF(inside: view.bounds)
-            if let image = NSImage(data: pdfData),
-               let rep = NSBitmapImageRep(data: image.tiffRepresentation ?? Data()),
-               let png = rep.representation(using: .png, properties: [:]) {
+            let bounds = view.bounds
+            guard bounds.width > 0 && bounds.height > 0,
+                  let rep = view.bitmapImageRepForCachingDisplay(in: bounds) else {
+                print("Failed to initialize bitmap rep")
+                exit(1)
+            }
+            view.cacheDisplay(in: bounds, to: rep)
+
+            if let png = rep.representation(using: .png, properties: [:]) {
                 let url = URL(fileURLWithPath: outPath)
                 try? FileManager.default.createDirectory(at: url.deletingLastPathComponent(), withIntermediateDirectories: true)
                 try? png.write(to: url)

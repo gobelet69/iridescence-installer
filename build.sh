@@ -41,8 +41,8 @@ mkdir -p "${TMP_BUNDLE}/Contents/Resources"
 cp "${BINARY}" "${TMP_BUNDLE}/Contents/MacOS/Iridescence Installer"
 chmod +x "${TMP_BUNDLE}/Contents/MacOS/Iridescence Installer"
 
-if [ -f "Resources/AppIcon.icns" ]; then
-    cp "Resources/AppIcon.icns" "${TMP_BUNDLE}/Contents/Resources/AppIcon.icns"
+if [ -d "Resources" ]; then
+    cp -R Resources/* "${TMP_BUNDLE}/Contents/Resources/"
 fi
 
 cat > "${TMP_BUNDLE}/Contents/Info.plist" << 'PLIST'

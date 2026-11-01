@@ -21,17 +21,7 @@ public struct AppDetailSheet: View {
         VStack(spacing: 0) {
             // Header
             HStack(spacing: 14) {
-                if let iconData = app.iconData, let nsImage = NSImage(data: iconData) {
-                    Image(nsImage: nsImage)
-                        .resizable()
-                        .frame(width: 48, height: 48)
-                        .clipShape(RoundedRectangle(cornerRadius: 10))
-                } else {
-                    Image(systemName: "app.dashed")
-                        .font(.system(size: 36))
-                        .foregroundColor(IridescenceTheme.textMuted)
-                        .frame(width: 48, height: 48)
-                }
+                AppIconView(identifier: app.bundleIdentifier, size: 48)
 
                 VStack(alignment: .leading, spacing: 2) {
                     HStack(spacing: 6) {

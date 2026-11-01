@@ -132,17 +132,7 @@ struct UpdateRowView: View {
         VStack(alignment: .leading, spacing: 10) {
             HStack(spacing: 12) {
                 // Icon
-                if let iconData = app.iconData, let img = NSImage(data: iconData) {
-                    Image(nsImage: img)
-                        .resizable()
-                        .frame(width: 42, height: 42)
-                        .clipShape(RoundedRectangle(cornerRadius: 9))
-                } else {
-                    Image(systemName: "app.fill")
-                        .font(.system(size: 36))
-                        .foregroundColor(IridescenceTheme.textMuted)
-                        .frame(width: 42, height: 42)
-                }
+                AppIconView(identifier: app.bundleIdentifier, size: 42)
 
                 // Info
                 VStack(alignment: .leading, spacing: 3) {
@@ -217,15 +207,7 @@ struct SelfUpdateCardView: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
             HStack(spacing: 12) {
-                ZStack {
-                    RoundedRectangle(cornerRadius: 9)
-                        .fill(IridescenceTheme.deepViolet.opacity(0.15))
-                        .frame(width: 42, height: 42)
-
-                    Image(systemName: "sparkles")
-                        .font(.system(size: 18, weight: .bold))
-                        .foregroundColor(IridescenceTheme.luminousCyan)
-                }
+                AppIconView(identifier: SelfUpdateManager.installerBundleID, size: 42)
 
                 VStack(alignment: .leading, spacing: 3) {
                     HStack(spacing: 6) {

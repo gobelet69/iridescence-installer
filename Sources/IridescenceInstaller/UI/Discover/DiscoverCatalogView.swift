@@ -141,15 +141,7 @@ struct FeaturedHeroCard: View {
 
     var body: some View {
         HStack(spacing: 16) {
-            ZStack {
-                RoundedRectangle(cornerRadius: 12)
-                    .fill(IridescenceTheme.deepViolet.opacity(0.12))
-                    .frame(width: 64, height: 64)
-
-                Circle()
-                    .fill(IridescenceTheme.accentForName(app.accentColorName))
-                    .frame(width: 22, height: 22)
-            }
+            AppIconView(identifier: app.bundleIdentifier, accentColorName: app.accentColorName, size: 56)
 
             VStack(alignment: .leading, spacing: 4) {
                 HStack(spacing: 6) {
@@ -208,15 +200,7 @@ struct CatalogAppCard: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack(spacing: 10) {
-                ZStack {
-                    RoundedRectangle(cornerRadius: 8)
-                        .fill(IridescenceTheme.surfaceSubtle)
-                        .frame(width: 36, height: 36)
-
-                    Circle()
-                        .fill(IridescenceTheme.accentForName(app.accentColorName))
-                        .frame(width: 12, height: 12)
-                }
+                AppIconView(identifier: app.bundleIdentifier, accentColorName: app.accentColorName, size: 36)
 
                 VStack(alignment: .leading, spacing: 1) {
                     Text(app.name)

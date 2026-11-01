@@ -157,7 +157,7 @@ public actor AppScanner {
         let size = NSSize(width: 64, height: 64)
         let thumb = NSImage(size: size)
         thumb.lockFocus()
-        image.draw(in: NSRect(origin: .zero, size: size), from: .zero, operation: .sourceOver, fraction: 1.0)
+        image.draw(in: NSRect(origin: .zero, size: size), from: NSRect(origin: .zero, size: image.size), operation: .sourceOver, fraction: 1.0)
         thumb.unlockFocus()
 
         guard let tiffData = thumb.tiffRepresentation,

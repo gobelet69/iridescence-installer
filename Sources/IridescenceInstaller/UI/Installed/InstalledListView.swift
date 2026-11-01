@@ -153,17 +153,7 @@ struct InstalledAppRow: View {
         VStack(spacing: 6) {
             HStack(spacing: 12) {
                 // Icon
-                if let iconData = app.iconData, let img = NSImage(data: iconData) {
-                    Image(nsImage: img)
-                        .resizable()
-                        .frame(width: 38, height: 38)
-                        .clipShape(RoundedRectangle(cornerRadius: 8))
-                } else {
-                    Image(systemName: "app.fill")
-                        .font(.system(size: 32))
-                        .foregroundColor(IridescenceTheme.textMuted)
-                        .frame(width: 38, height: 38)
-                }
+                AppIconView(identifier: app.bundleIdentifier, size: 38)
 
                 // Info
                 VStack(alignment: .leading, spacing: 3) {

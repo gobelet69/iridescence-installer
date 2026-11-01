@@ -32,19 +32,7 @@ public struct CatalogDetailSheet: View {
             // Header
             HStack(spacing: 14) {
                 // Icon emblem
-                ZStack {
-                    RoundedRectangle(cornerRadius: 12)
-                        .fill(IridescenceTheme.surfaceSubtle)
-                        .frame(width: 54, height: 54)
-                        .overlay(
-                            RoundedRectangle(cornerRadius: 12)
-                                .stroke(IridescenceTheme.hairline, lineWidth: 1)
-                        )
-
-                    Circle()
-                        .fill(IridescenceTheme.accentForName(app.accentColorName))
-                        .frame(width: 16, height: 16)
-                }
+                AppIconView(identifier: app.bundleIdentifier, accentColorName: app.accentColorName, size: 54)
 
                 VStack(alignment: .leading, spacing: 3) {
                     HStack(spacing: 8) {
