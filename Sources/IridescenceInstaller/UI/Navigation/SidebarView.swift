@@ -9,22 +9,29 @@ public struct SidebarView: View {
     }
 
     public var body: some View {
-        NavigationSplitView {
+        HStack(spacing: 0) {
             SidebarPanel(appState: appState)
-                .frame(minWidth: 190, idealWidth: 210, maxWidth: 240)
-        } detail: {
-            switch appState.selectedTab {
-            case .installed:
-                InstalledListView(appState: appState)
-            case .updates:
-                UpdatesListView(appState: appState)
-            case .discover:
-                DiscoverCatalogView(appState: appState)
-            case .settings:
-                SettingsView(appState: appState)
+
+            Divider()
+                .overlay(IridescenceTheme.hairline)
+
+            Group {
+                switch appState.selectedTab {
+                case .installed:
+                    InstalledListView(appState: appState)
+                case .updates:
+                    UpdatesListView(appState: appState)
+                case .discover:
+                    DiscoverCatalogView(appState: appState)
+                case .settings:
+                    SettingsView(appState: appState)
+                }
             }
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
+            .background(IridescenceTheme.canvas)
         }
-        .frame(minWidth: 840, minHeight: 540)
+        .frame(minWidth: 920, minHeight: 580)
+        .background(IridescenceTheme.canvas)
     }
 }
 
@@ -37,7 +44,7 @@ public struct SidebarPanel: View {
 
     public var body: some View {
         VStack(spacing: 0) {
-            // Sidebar header wordmark
+            // Header wordmark with traffic lights clearance
             HStack(spacing: 8) {
                 ZStack {
                     RoundedRectangle(cornerRadius: 6)
@@ -55,60 +62,75 @@ public struct SidebarPanel: View {
 
                 Spacer()
             }
-            .padding(.horizontal, 14)
-            .padding(.vertical, 12)
+            .padding(.horizontal, 16)
+            .padding(.top, 38) // Elegant clearance below native window traffic lights
+            .padding(.bottom, 12)
 
             Divider()
+                .padding(.horizontal, 12)
+                .padding(.bottom, 8)
 
-            // Sidebar Navigation items
-            List(selection: $appState.selectedTab) {
-                Section("Manager") {
-                    NavigationLink(value: NavigationTab.installed) {
-                        HStack {
-                            Label("Installed", systemImage: NavigationTab.installed.iconName)
-                            Spacer()
-                            Text("\(appState.installedApps.count)")
-                                .font(IridescenceTheme.fontMono(size: 10, weight: .semibold))
-                                .foregroundColor(IridescenceTheme.textMuted)
-                        }
+            // Custom atelier navigation items
+            ScrollView(.vertical, showsIndicators: false) {
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("MANAGER")
+                        .font(IridescenceTheme.fontMono(size: 10, weight: .bold))
+                        .foregroundColor(IridescenceTheme.textMuted)
+                        .padding(.horizontal, 14)
+                        .padding(.top, 6)
+                        .padding(.bottom, 4)
+
+                    SidebarItemButton(
+                        tab: .installed,
+                        title: "Installed",
+                        icon: NavigationTab.installed.iconName,
+                        badge: "\(appState.installedApps.count)",
+                        isSelected: appState.selectedTab == .installed
+                    ) {
+                        appState.selectedTab = .installed
                     }
 
-                    NavigationLink(value: NavigationTab.updates) {
-                        HStack {
-                            Label("Updates", systemImage: NavigationTab.updates.iconName)
-                            Spacer()
-                            if !appState.pendingUpdates.isEmpty {
-                                Text("\(appState.pendingUpdates.count)")
-                                    .font(IridescenceTheme.fontMono(size: 10, weight: .bold))
-                                    .padding(.horizontal, 6)
-                                    .padding(.vertical, 2)
-                                    .background(IridescenceTheme.warmCoral)
-                                    .foregroundColor(Color.white)
-                                    .clipShape(Capsule())
-                            }
-                        }
+                    SidebarItemButton(
+                        tab: .updates,
+                        title: "Updates",
+                        icon: NavigationTab.updates.iconName,
+                        badge: appState.pendingUpdates.isEmpty ? nil : "\(appState.pendingUpdates.count)",
+                        badgeIsAlert: true,
+                        isSelected: appState.selectedTab == .updates
+                    ) {
+                        appState.selectedTab = .updates
                     }
 
-                    NavigationLink(value: NavigationTab.discover) {
-                        HStack {
-                            Label("Discover", systemImage: NavigationTab.discover.iconName)
-                            Spacer()
-                            Text("★")
-                                .font(.system(size: 11))
-                                .foregroundColor(IridescenceTheme.luminousCyan)
-                        }
+                    SidebarItemButton(
+                        tab: .discover,
+                        title: "Discover",
+                        icon: NavigationTab.discover.iconName,
+                        star: true,
+                        isSelected: appState.selectedTab == .discover
+                    ) {
+                        appState.selectedTab = .discover
+                    }
+
+                    Text("PREFERENCES")
+                        .font(IridescenceTheme.fontMono(size: 10, weight: .bold))
+                        .foregroundColor(IridescenceTheme.textMuted)
+                        .padding(.horizontal, 14)
+                        .padding(.top, 16)
+                        .padding(.bottom, 4)
+
+                    SidebarItemButton(
+                        tab: .settings,
+                        title: "Settings",
+                        icon: NavigationTab.settings.iconName,
+                        isSelected: appState.selectedTab == .settings
+                    ) {
+                        appState.selectedTab = .settings
                     }
                 }
-
-                Section("Preferences") {
-                    NavigationLink(value: NavigationTab.settings) {
-                        Label("Settings", systemImage: NavigationTab.settings.iconName)
-                    }
-                }
+                .padding(.horizontal, 8)
             }
-            .listStyle(.sidebar)
 
-            // Self-Update Callout Banner
+            // Self-Update Callout Banner (if update ready)
             if let selfRel = appState.selfUpdateRelease {
                 VStack(alignment: .leading, spacing: 6) {
                     HStack(spacing: 4) {
@@ -143,10 +165,12 @@ public struct SidebarPanel: View {
                         .stroke(IridescenceTheme.luminousCyan.opacity(0.4), lineWidth: 1)
                 )
                 .padding(.horizontal, 10)
-                .padding(.bottom, 6)
+                .padding(.bottom, 8)
             }
 
-            Spacer()
+            Spacer(minLength: 0)
+
+            Divider()
 
             // Bottom rate limit telemetry footer
             HStack(spacing: 6) {
@@ -166,12 +190,66 @@ public struct SidebarPanel: View {
             }
             .padding(.horizontal, 12)
             .padding(.vertical, 8)
-            .background(IridescenceTheme.surfaceSubtle.opacity(0.4))
+            .background(IridescenceTheme.surfaceSubtle.opacity(0.3))
         }
+        .frame(width: 210)
+        .background(IridescenceTheme.surfaceSubtle.opacity(0.5))
     }
 }
 
-/// Standalone visual snapshot container that can be rendered offscreen cleanly by ImageRenderer
+private struct SidebarItemButton: View {
+    let tab: NavigationTab
+    let title: String
+    let icon: String
+    var badge: String? = nil
+    var badgeIsAlert: Bool = false
+    var star: Bool = false
+    let isSelected: Bool
+    let action: () -> Void
+
+    @State private var isHovered = false
+
+    var body: some View {
+        Button(action: action) {
+            HStack(spacing: 10) {
+                Image(systemName: icon)
+                    .font(.system(size: 13, weight: isSelected ? .semibold : .regular))
+                    .foregroundColor(isSelected ? IridescenceTheme.luminousCyan : (isHovered ? IridescenceTheme.textPrimary : IridescenceTheme.textSecondary))
+                    .frame(width: 18)
+
+                Text(title)
+                    .font(.system(size: 13, weight: isSelected ? .semibold : .regular))
+                    .foregroundColor(isSelected ? IridescenceTheme.textPrimary : (isHovered ? IridescenceTheme.textPrimary : IridescenceTheme.textSecondary))
+
+                Spacer()
+
+                if let b = badge {
+                    Text(b)
+                        .font(IridescenceTheme.fontMono(size: 10, weight: .bold))
+                        .padding(.horizontal, 6)
+                        .padding(.vertical, 2)
+                        .background(badgeIsAlert ? IridescenceTheme.warmCoral : IridescenceTheme.surfaceSubtle)
+                        .foregroundColor(badgeIsAlert ? Color.white : IridescenceTheme.textPrimary)
+                        .clipShape(Capsule())
+                } else if star {
+                    Text("★")
+                        .font(.system(size: 11))
+                        .foregroundColor(IridescenceTheme.luminousCyan)
+                }
+            }
+            .padding(.horizontal, 10)
+            .padding(.vertical, 6)
+            .background(
+                RoundedRectangle(cornerRadius: 6)
+                    .fill(isSelected ? IridescenceTheme.surfaceSubtle : (isHovered ? IridescenceTheme.surfaceSubtle.opacity(0.5) : Color.clear))
+            )
+        }
+        .buttonStyle(.plain)
+        .onHover { isHovered = $0 }
+    }
+}
+
+/// Standalone visual snapshot container for test and rendering parity
 public struct StandaloneSnapshotView: View {
     @ObservedObject var appState: AppState
     let tab: NavigationTab
@@ -182,28 +260,6 @@ public struct StandaloneSnapshotView: View {
     }
 
     public var body: some View {
-        HStack(spacing: 0) {
-            SidebarPanel(appState: appState)
-                .frame(width: 220)
-                .background(IridescenceTheme.surfaceSubtle.opacity(0.2))
-
-            Divider()
-
-            Group {
-                switch tab {
-                case .installed:
-                    InstalledListView(appState: appState)
-                case .updates:
-                    UpdatesListView(appState: appState)
-                case .discover:
-                    DiscoverCatalogView(appState: appState)
-                case .settings:
-                    SettingsView(appState: appState)
-                }
-            }
-            .frame(maxWidth: .infinity, maxHeight: .infinity)
-        }
-        .frame(width: 860, height: 560)
-        .background(IridescenceTheme.canvas)
+        SidebarView(appState: appState)
     }
 }

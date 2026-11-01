@@ -2,11 +2,32 @@ import SwiftUI
 import AppKit
 import IridescenceCore
 
+struct WindowConfigurator: NSViewRepresentable {
+    func makeNSView(context: Context) -> NSView {
+        let view = NSView()
+        DispatchQueue.main.async {
+            if let window = view.window {
+                window.titleVisibility = .hidden
+                window.titlebarAppearsTransparent = true
+                window.isMovableByWindowBackground = true
+                window.tabbingMode = .disallowed
+                window.toolbar = nil
+            }
+        }
+        return view
+    }
+
+    func updateNSView(_ nsView: NSView, context: Context) {}
+}
+
 @main
 struct IridescenceInstallerApp: App {
     @StateObject private var appState = AppState.shared
 
     init() {
+        // Prevent macOS from creating automatic window tabs
+        NSWindow.allowsAutomaticWindowTabbing = false
+
         // Handle command-line arguments (e.g. --selftest, --tab, --render-views)
         if CommandLine.arguments.contains("--selftest") {
             runSelfTestAndExit()
@@ -30,14 +51,14 @@ struct IridescenceInstallerApp: App {
     var body: some Scene {
         WindowGroup {
             SidebarView(appState: appState)
+                .background(WindowConfigurator())
                 .background(IridescenceTheme.canvas)
                 .preferredColorScheme(nil) // System dynamic appearance
                 .onAppear {
                     handleCaptureIfRequested()
                 }
         }
-        .windowStyle(.titleBar)
-        .windowToolbarStyle(.unified)
+        .windowStyle(.hiddenTitleBar)
         .commands {
             CommandGroup(after: .appInfo) {
                 Button("Check for Updates...") {

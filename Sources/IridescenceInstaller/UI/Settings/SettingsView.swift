@@ -36,45 +36,43 @@ public struct SettingsView: View {
     }
 
     public var body: some View {
-        HStack(spacing: 0) {
-            // Sidebar for Settings Sections
-            VStack(alignment: .leading, spacing: 4) {
-                Text("Settings")
-                    .font(.system(size: 13, weight: .bold))
-                    .foregroundColor(IridescenceTheme.textPrimary)
-                    .padding(.horizontal, 12)
-                    .padding(.top, 16)
-                    .padding(.bottom, 8)
+        VStack(spacing: 0) {
+            // Standard Atelier Header with pixel grid
+            PixelGridHeader(
+                title: "Settings & Preferences",
+                subtitle: "Manage security quarantine, update policies, and local storage",
+                accentColor: IridescenceTheme.deepViolet
+            )
 
+            // Horizontal Category Selector Tab Bar
+            HStack(spacing: 6) {
                 ForEach(SettingsSection.allCases) { section in
                     Button(action: { selectedSection = section }) {
-                        HStack(spacing: 8) {
+                        HStack(spacing: 6) {
                             Image(systemName: section.iconName)
-                                .font(.system(size: 13))
-                                .frame(width: 18)
+                                .font(.system(size: 11))
                             Text(section.rawValue)
-                                .font(.system(size: 12, weight: selectedSection == section ? .semibold : .regular))
-                            Spacer()
+                                .font(.system(size: 11, weight: selectedSection == section ? .semibold : .regular))
                         }
                         .padding(.horizontal, 10)
                         .padding(.vertical, 6)
-                        .background(selectedSection == section ? IridescenceTheme.surfaceSubtle : Color.clear)
-                        .cornerRadius(6)
+                        .background(
+                            RoundedRectangle(cornerRadius: 6)
+                                .fill(selectedSection == section ? IridescenceTheme.surfaceSubtle : Color.clear)
+                        )
                         .foregroundColor(selectedSection == section ? IridescenceTheme.textPrimary : IridescenceTheme.textSecondary)
                     }
                     .buttonStyle(.plain)
                 }
-
                 Spacer()
             }
-            .frame(width: 170)
-            .background(IridescenceTheme.cardSurface)
-            .overlay(
-                Rectangle().frame(width: 1).foregroundColor(IridescenceTheme.hairline),
-                alignment: .trailing
-            )
+            .padding(.horizontal, 16)
+            .padding(.vertical, 8)
+            .background(IridescenceTheme.surfaceSubtle.opacity(0.3))
 
-            // Content Area
+            Divider()
+
+            // Full-Width Content Area
             ScrollView {
                 VStack(alignment: .leading, spacing: 18) {
                     switch selectedSection {
@@ -91,6 +89,7 @@ public struct SettingsView: View {
                     }
                 }
                 .padding(20)
+                .frame(maxWidth: .infinity, alignment: .leading)
             }
             .background(IridescenceTheme.canvas)
         }
