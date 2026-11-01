@@ -46,7 +46,7 @@ public struct DiscoverCatalogView: View {
         VStack(spacing: 0) {
             // Header
             PixelGridHeader(
-                title: "Discover 111iridescence",
+                title: "Discover Iridescence",
                 subtitle: "Curated native macOS software from the official ecosystem",
                 accentColor: IridescenceTheme.luminousCyan
             )

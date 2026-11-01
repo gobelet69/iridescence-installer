@@ -56,9 +56,14 @@ public struct SidebarPanel: View {
                         .foregroundColor(IridescenceTheme.luminousCyan)
                 }
 
-                Text("111 Installer.")
-                    .font(IridescenceTheme.fontMono(size: 13, weight: .bold))
-                    .foregroundColor(IridescenceTheme.textPrimary)
+                VStack(alignment: .leading, spacing: 1) {
+                    Text("Iridescence")
+                        .font(IridescenceTheme.fontMono(size: 10, weight: .semibold))
+                        .foregroundColor(IridescenceTheme.textSecondary)
+                    Text("Installer")
+                        .font(.system(size: 14, weight: .bold))
+                        .foregroundColor(IridescenceTheme.textPrimary)
+                }
 
                 Spacer()
             }
@@ -192,7 +197,7 @@ public struct SidebarPanel: View {
             .padding(.vertical, 8)
             .background(IridescenceTheme.surfaceSubtle.opacity(0.3))
         }
-        .frame(width: 210)
+        .frame(width: 220)
         .background(IridescenceTheme.surfaceSubtle.opacity(0.5))
     }
 }

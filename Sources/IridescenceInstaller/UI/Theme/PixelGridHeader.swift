@@ -79,19 +79,9 @@ public struct PixelGridHeader: View {
                 }
 
                 VStack(alignment: .leading, spacing: 2) {
-                    HStack(spacing: 6) {
-                        Text(title)
-                            .font(.system(size: 17, weight: .bold))
-                            .foregroundColor(IridescenceTheme.textPrimary)
-
-                        Text("111")
-                            .font(IridescenceTheme.fontMono(size: 10, weight: .bold))
-                            .padding(.horizontal, 5)
-                            .padding(.vertical, 2)
-                            .background(IridescenceTheme.electricBlue.opacity(0.15))
-                            .foregroundColor(IridescenceTheme.electricBlue)
-                            .clipShape(Capsule())
-                    }
+                    Text(title)
+                        .font(.system(size: 17, weight: .bold))
+                        .foregroundColor(IridescenceTheme.textPrimary)
 
                     if let sub = subtitle {
                         Text(sub)

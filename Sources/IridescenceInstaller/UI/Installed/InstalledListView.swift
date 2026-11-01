@@ -46,7 +46,7 @@ public struct InstalledListView: View {
             // Header
             PixelGridHeader(
                 title: "Installed Applications",
-                subtitle: "\(appState.installedApps.count) 111iridescence application\(appState.installedApps.count == 1 ? "" : "s") installed on this Mac",
+                subtitle: "\(appState.installedApps.count) Iridescence application\(appState.installedApps.count == 1 ? "" : "s") installed on this Mac",
                 accentColor: IridescenceTheme.deepViolet
             )
 
@@ -119,7 +119,7 @@ public struct InstalledListView: View {
                     Text("No Iridescence applications installed yet")
                         .font(.system(size: 14, weight: .semibold))
                         .foregroundColor(IridescenceTheme.textPrimary)
-                    Text("Visit the Discover tab to install apps from the 111iridescence portfolio.")
+                    Text("Visit the Discover tab to install apps from the Iridescence portfolio.")
                         .font(.system(size: 12))
                         .foregroundColor(IridescenceTheme.textSecondary)
                     Spacer()

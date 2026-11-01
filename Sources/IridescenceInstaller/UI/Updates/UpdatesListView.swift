@@ -82,7 +82,7 @@ public struct UpdatesListView: View {
                         .font(.system(size: 15, weight: .bold))
                         .foregroundColor(IridescenceTheme.textPrimary)
 
-                    Text("All tracked 111iridescence applications match the latest published releases.")
+                    Text("All tracked Iridescence applications match the latest published releases.")
                         .font(.system(size: 12))
                         .foregroundColor(IridescenceTheme.textSecondary)
 
