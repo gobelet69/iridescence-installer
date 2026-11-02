@@ -1,0 +1,56 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  macos-build-and-test:
+    name: Build & Test (macOS)
+    runs-on: macos-14
+    timeout-minutes: 20
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Select Xcode version
+        run: |
+          if [ -d "/Applications/Xcode_16.2.app" ]; then
+            sudo xcode-select -s /Applications/Xcode_16.2.app
+          elif [ -d "/Applications/Xcode_16.1.app" ]; then
+            sudo xcode-select -s /Applications/Xcode_16.1.app
+          elif [ -d "/Applications/Xcode_16.0.app" ]; then
+            sudo xcode-select -s /Applications/Xcode_16.0.app
+          elif [ -d "/Applications/Xcode_15.4.app" ]; then
+            sudo xcode-select -s /Applications/Xcode_15.4.app
+          fi
+          xcodebuild -version
+
+      - name: Run unit test suite
+        run: |
+          swift test --scratch-path /tmp/test-build
+
+      - name: Build release application bundle
+        run: |
+          ./build.sh release
+
+      - name: Verify application bundle and Info.plist
+        run: |
+          set -euo pipefail
+          APP_PATH="Iridescence Installer.app"
+          test -d "$APP_PATH"
+          test -x "$APP_PATH/Contents/MacOS/IridescenceInstaller"
+          test -f "$APP_PATH/Contents/Info.plist"
+          plutil -lint "$APP_PATH/Contents/Info.plist"
+          codesign --verify --deep --strict "$APP_PATH"
+          echo "✓ Iridescence Installer bundle verified successfully."

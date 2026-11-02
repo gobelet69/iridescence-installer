@@ -116,7 +116,7 @@ public struct CatalogApp: Identifiable, Codable, Sendable, Hashable {
             taglineFr: "Notes instantanées et épurées pour macOS.",
             descriptionEn: "High-speed native plain-text scratchpad engineered for rapid capture and zero-latency editing.",
             descriptionFr: "Bloc-notes natif ultra-rapide conçu pour la saisie instantanée sans latence.",
-            repository: "gobelet69/QuickPad",
+            repository: "gobelet69/quickpad",
             bundleIdentifier: "org.111iridescence.quickpad",
             minimumOSVersion: "13.0",
             accentColorName: "ultraviolet",

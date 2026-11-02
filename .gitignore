@@ -8,4 +8,5 @@
 /tmp
 *.dmg
 *.app
+* [0-9]*
 .swiftpm/

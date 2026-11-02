@@ -38,9 +38,13 @@ public enum AppIconProvider {
                 Bundle.main.url(forResource: name, withExtension: "png"),
                 Bundle.main.resourceURL?.appendingPathComponent("AppIcons/\(name).png"),
                 Bundle.main.resourceURL?.appendingPathComponent("\(name).png"),
-                // Fallback to source directory if running in dev environment
-                URL(fileURLWithPath: "/Users/theodeville/Documents/Iridescence/iridescence-installer/Resources/AppIcons/\(name).png"),
-                URL(fileURLWithPath: "/Users/theodeville/Documents/Iridescence/brand/app-icons/\(name == "installer" ? "quickpad" : name)/icon-128.png")
+                // Fallback to development directory if configured via environment or adjacent bundle
+                ProcessInfo.processInfo.environment["IRIDESCENCE_ROOT"].map {
+                    URL(fileURLWithPath: $0).appendingPathComponent("iridescence-installer/Resources/AppIcons/\(name).png")
+                },
+                ProcessInfo.processInfo.environment["IRIDESCENCE_ROOT"].map {
+                    URL(fileURLWithPath: $0).appendingPathComponent("brand/app-icons/\(name == "installer" ? "quickpad" : name)/icon-128.png")
+                }
             ]
 
             for candidate in candidatePaths {
