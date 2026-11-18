@@ -6,10 +6,16 @@ cd "${SCRIPT_DIR}"
 
 APP_NAME="Iridescence Installer"
 BUNDLE_ID="org.111iridescence.installer"
-VERSION="1.0.0"
-DMG_NAME="Iridescence-Installer-${VERSION}-arm64.dmg"
+VERSION="1.0.1"
+UNIVERSAL="${UNIVERSAL:-0}"
+if [ "$UNIVERSAL" = "1" ]; then
+    DMG_NAME="Iridescence-Installer-${VERSION}-universal.dmg"
+else
+    DMG_NAME="Iridescence-Installer-${VERSION}-arm64.dmg"
+fi
 SRC_APP="${APP_NAME}.app"
-STAGING_DIR="/tmp/IridescenceInstaller_DMG_Staging"
+STAGING_DIR="$(mktemp -d /tmp/IridescenceInstaller_DMG_Staging.XXXXXX)"
+trap 'rm -rf "${STAGING_DIR}"' EXIT
 DIST_DIR="${SCRIPT_DIR}/dist"
 
 echo "============================================================"
@@ -17,10 +23,9 @@ echo " Packaging Iridescence Installer for macOS (${DMG_NAME}) "
 echo " 111iridescence Atelier "
 echo "============================================================"
 
-./build.sh release
+UNIVERSAL="${UNIVERSAL}" ./build.sh release
 
 echo "==> Preparing DMG staging directory..."
-rm -rf "${STAGING_DIR}" "${DIST_DIR}"
 mkdir -p "${STAGING_DIR}" "${DIST_DIR}"
 
 echo "==> Copying ${SRC_APP} to staging..."

@@ -157,3 +157,7 @@ swift test --scratch-path /tmp/IridescenceInstallerBuild
 ## License
 
 MIT License. Designed and maintained for the **111iridescence** ecosystem.
+
+## Release 1.0.1
+
+Readable supporting text and explicit status badges, native navigation shortcuts and accessible sidebar selection/counts. The release DMG contains a Universal 2 build for Apple Silicon and Intel on macOS 13 or later. Ad-hoc signed; not Apple-notarised. See [CHANGELOG.md](CHANGELOG.md).

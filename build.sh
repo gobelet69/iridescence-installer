@@ -7,10 +7,11 @@ cd "${SCRIPT_DIR}"
 APP_NAME="Iridescence Installer"
 BUNDLE="${APP_NAME}.app"
 BUILD_CONFIG="${1:-release}"
-BUILD_STAGE="/tmp/IridescenceInstallerBuildStage"
+BUILD_STAGE="$(mktemp -d /tmp/IridescenceInstallerBuildStage.XXXXXX)"
+BUILD_SCRATCH="$(mktemp -d /tmp/IridescenceInstallerScratch.XXXXXX)"
+trap 'rm -rf "${BUILD_STAGE}" "${BUILD_SCRATCH}"' EXIT
 
 echo "▸ Staging source files in /tmp to avoid iCloud coordination locks…"
-rm -rf "${BUILD_STAGE}"
 mkdir -p "${BUILD_STAGE}"
 cp -R Sources "${BUILD_STAGE}/"
 if [ -d "Tests" ]; then
@@ -20,7 +21,19 @@ cp Package.swift "${BUILD_STAGE}/"
 
 echo "▸ Building ${APP_NAME} (${BUILD_CONFIG})…"
 cd "${BUILD_STAGE}"
-swift build -c "${BUILD_CONFIG}" --scratch-path "/tmp/IridescenceInstallerScratch"
+UNIVERSAL="${UNIVERSAL:-0}"
+if [ "$UNIVERSAL" = "1" ]; then
+    for architecture in arm64 x86_64; do
+        swift build -c "${BUILD_CONFIG}" --jobs 2 --triple "${architecture}-apple-macosx13.0" --scratch-path "${BUILD_SCRATCH}/${architecture}"
+        binary_dir=$(swift build -c "${BUILD_CONFIG}" --triple "${architecture}-apple-macosx13.0" --scratch-path "${BUILD_SCRATCH}/${architecture}" --show-bin-path)
+        cp "${binary_dir}/IridescenceInstaller" "${BUILD_STAGE}/IridescenceInstaller-${architecture}"
+    done
+    lipo -create "${BUILD_STAGE}/IridescenceInstaller-arm64" "${BUILD_STAGE}/IridescenceInstaller-x86_64" -output "${BUILD_STAGE}/IridescenceInstaller"
+else
+    swift build -c "${BUILD_CONFIG}" --jobs 2 --scratch-path "${BUILD_SCRATCH}/native"
+    binary_dir=$(swift build -c "${BUILD_CONFIG}" --scratch-path "${BUILD_SCRATCH}/native" --show-bin-path)
+    cp "${binary_dir}/IridescenceInstaller" "${BUILD_STAGE}/IridescenceInstaller"
+fi
 
 if [ "$BUILD_CONFIG" = "release" ]; then
     CONFIG_DIR="Release"
@@ -28,12 +41,12 @@ else
     CONFIG_DIR="Debug"
 fi
 
-BINARY="/tmp/IridescenceInstallerScratch/out/Products/${CONFIG_DIR}/IridescenceInstaller"
+BINARY="${BUILD_STAGE}/IridescenceInstaller"
 
 cd - >/dev/null
 
 echo "▸ Packaging ${BUNDLE} in /tmp staging…"
-TMP_BUNDLE="/tmp/${BUNDLE}"
+TMP_BUNDLE="${BUILD_STAGE}/${BUNDLE}"
 rm -rf "${TMP_BUNDLE}" "${BUNDLE}"
 mkdir -p "${TMP_BUNDLE}/Contents/MacOS"
 mkdir -p "${TMP_BUNDLE}/Contents/Resources"
@@ -67,9 +80,9 @@ cat > "${TMP_BUNDLE}/Contents/Info.plist" << 'PLIST'
     <key>CFBundlePackageType</key>
     <string>APPL</string>
     <key>CFBundleShortVersionString</key>
-    <string>1.0.0</string>
+    <string>1.0.1</string>
     <key>CFBundleVersion</key>
-    <string>1</string>
+    <string>2</string>
     <key>LSMinimumSystemVersion</key>
     <string>13.0</string>
     <key>NSHighResolutionCapable</key>

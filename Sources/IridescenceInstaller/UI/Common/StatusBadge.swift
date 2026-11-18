@@ -59,16 +59,7 @@ public struct StatusBadge: View {
         }
     }
 
-    private var textColor: Color {
-        switch kind {
-        case .official: return IridescenceTheme.deepViolet
-        case .stable: return IridescenceTheme.emeraldPhosphor
-        case .beta: return IridescenceTheme.warmCoral
-        case .quarantinePresent: return Color.orange
-        case .quarantineClean: return IridescenceTheme.turquoise
-        case .architecture: return IridescenceTheme.textSecondary
-        }
-    }
+    private var textColor: Color { IridescenceTheme.textPrimary }
 
     private var backgroundColor: Color {
         indicatorColor.opacity(0.12)

@@ -43,11 +43,8 @@ public enum IridescenceTheme {
                       : NSColor(srgbRed: 0x6E/255.0, green: 0x65/255.0, blue: 0x78/255.0, alpha: 1.0)
     })
 
-    public static let textMuted = Color(nsColor: NSColor(name: nil) { appearance in
-        let isDark = appearance.bestMatch(from: [.darkAqua, .aqua]) == .darkAqua
-        return isDark ? NSColor(srgbRed: 0x6E/255.0, green: 0x64/255.0, blue: 0x7D/255.0, alpha: 1.0)
-                      : NSColor(srgbRed: 0x99/255.0, green: 0x8F/255.0, blue: 0xA6/255.0, alpha: 1.0)
-    })
+    // Small supporting labels must retain readable contrast in both appearances.
+    public static let textMuted = textSecondary
 
     // Spectral Accents
     public static let deepViolet = Color(red: 0x70/255.0, green: 0x2E/255.0, blue: 0xE4/255.0)

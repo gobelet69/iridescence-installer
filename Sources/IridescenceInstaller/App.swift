@@ -60,6 +60,18 @@ struct IridescenceInstallerApp: App {
         }
         .windowStyle(.hiddenTitleBar)
         .commands {
+            CommandGroup(replacing: .appSettings) {
+                Button("Settings…") { appState.selectedTab = .settings }
+                    .keyboardShortcut(",", modifiers: .command)
+            }
+            CommandMenu("Navigate") {
+                Button("Installed") { appState.selectedTab = .installed }
+                    .keyboardShortcut("1", modifiers: .command)
+                Button("Updates") { appState.selectedTab = .updates }
+                    .keyboardShortcut("2", modifiers: .command)
+                Button("Discover") { appState.selectedTab = .discover }
+                    .keyboardShortcut("3", modifiers: .command)
+            }
             CommandGroup(after: .appInfo) {
                 Button("Check for Updates...") {
                     Task {

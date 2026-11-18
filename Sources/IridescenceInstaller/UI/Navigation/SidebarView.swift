@@ -184,13 +184,13 @@ public struct SidebarPanel: View {
                     .frame(width: 6, height: 6)
 
                 Text("GitHub API: \(appState.rateLimitRemaining) rem")
-                    .font(IridescenceTheme.fontMono(size: 9))
+                    .font(IridescenceTheme.fontMono(size: 11))
                     .foregroundColor(IridescenceTheme.textMuted)
 
                 Spacer()
 
                 Text("v1.0.0")
-                    .font(IridescenceTheme.fontMono(size: 9))
+                    .font(IridescenceTheme.fontMono(size: 11))
                     .foregroundColor(IridescenceTheme.textMuted)
             }
             .padding(.horizontal, 12)
@@ -233,8 +233,8 @@ private struct SidebarItemButton: View {
                         .font(IridescenceTheme.fontMono(size: 10, weight: .bold))
                         .padding(.horizontal, 6)
                         .padding(.vertical, 2)
-                        .background(badgeIsAlert ? IridescenceTheme.warmCoral : IridescenceTheme.surfaceSubtle)
-                        .foregroundColor(badgeIsAlert ? Color.white : IridescenceTheme.textPrimary)
+                        .background(badgeIsAlert ? IridescenceTheme.warmCoral.opacity(0.12) : IridescenceTheme.surfaceSubtle)
+                        .foregroundColor(IridescenceTheme.textPrimary)
                         .clipShape(Capsule())
                 } else if star {
                     Text("★")
@@ -250,6 +250,9 @@ private struct SidebarItemButton: View {
             )
         }
         .buttonStyle(.plain)
+        .accessibilityLabel(title)
+        .accessibilityValue(badge ?? "")
+        .accessibilityAddTraits(isSelected ? .isSelected : [])
         .onHover { isHovered = $0 }
     }
 }
