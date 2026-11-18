@@ -219,7 +219,7 @@ struct SelfUpdateCardView: View {
                     }
 
                     HStack(spacing: 6) {
-                        Text("Current v1.0.0")
+                        Text("Current v\(appState.currentAppVersion)")
                             .font(IridescenceTheme.fontMono(size: 11))
                             .foregroundColor(IridescenceTheme.textMuted)
 

@@ -167,7 +167,7 @@ public struct SettingsView: View {
 
                 HStack {
                     VStack(alignment: .leading, spacing: 2) {
-                        Text("Installed Version: v1.0.0")
+                        Text("Installed Version: v\(appState.currentAppVersion)")
                             .font(IridescenceTheme.fontMono(size: 12, weight: .semibold))
                             .foregroundColor(IridescenceTheme.textPrimary)
 

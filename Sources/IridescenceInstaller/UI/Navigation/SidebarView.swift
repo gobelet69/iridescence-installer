@@ -189,7 +189,7 @@ public struct SidebarPanel: View {
 
                 Spacer()
 
-                Text("v1.0.0")
+                Text("v\(appState.currentAppVersion)")
                     .font(IridescenceTheme.fontMono(size: 11))
                     .foregroundColor(IridescenceTheme.textMuted)
             }

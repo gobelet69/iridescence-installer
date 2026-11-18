@@ -25,6 +25,8 @@ public enum NavigationTab: String, CaseIterable, Identifiable {
 public final class AppState: ObservableObject {
     public static let shared = AppState()
 
+    public let currentAppVersion = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "Unknown"
+
     @Published public var selectedTab: NavigationTab = .installed
     @Published public var installedApps: [InstalledApp] = []
     @Published public var pendingUpdates: [InstalledApp] = []
