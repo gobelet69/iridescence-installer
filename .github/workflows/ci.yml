@@ -49,8 +49,10 @@ jobs:
           set -euo pipefail
           APP_PATH="Iridescence Installer.app"
           test -d "$APP_PATH"
-          test -x "$APP_PATH/Contents/MacOS/IridescenceInstaller"
           test -f "$APP_PATH/Contents/Info.plist"
           plutil -lint "$APP_PATH/Contents/Info.plist"
+          EXECUTABLE=$(/usr/libexec/PlistBuddy -c 'Print :CFBundleExecutable' "$APP_PATH/Contents/Info.plist")
+          test -n "$EXECUTABLE"
+          test -x "$APP_PATH/Contents/MacOS/$EXECUTABLE"
           codesign --verify --deep --strict "$APP_PATH"
           echo "✓ Iridescence Installer bundle verified successfully."
